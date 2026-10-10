@@ -1,36 +1,271 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Cosmic Garden palette — keep in sync with src/lib/palette.js.
+   Muted and cinematic: never bright neon. */
+@theme {
+  --color-space: #0b0f1a;    /* deep space base */
+  --color-electric: #60a5fa; /* tech glow */
+  --color-nebula: #a78bfa;   /* soft violet tech glow */
+  --color-bloom: #3dbe8b;    /* muted emerald nature glow */
+  --color-moss: #6b8f71;     /* soft moss */
+  --color-forest: #0f2a20;   /* dark green ground of the Nature section */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  background-color: var(--color-space);
+}
+
+/* Faint nebula glow, screened over the 3D scene */
+.cosmic-glow {
+  background: radial-gradient(circle at 50% 30%, rgba(30, 58, 138, 0.25), transparent 60%);
+  mix-blend-mode: screen;
+}
+
+/* Film look: letterbox bars for the opening shot (2.39:1, capped on tall screens) */
+.letterbox-bar {
+  position: absolute;
+  inset-inline: 0;
+  height: min(12vh, max(0px, calc((100vh - 100vw / 2.39) / 2)));
+  background-color: #030509;
+}
+
+/* Film look: fine flickering grain over the whole page */
+.film-grain {
+  position: absolute;
+  inset: -100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+  opacity: 0.05;
+  animation: grainFlicker 0.9s steps(1) infinite;
+}
+
+@keyframes grainFlicker {
+  0% { transform: translate(0, 0); }
+  17% { transform: translate(-7%, 4%); }
+  33% { transform: translate(5%, -9%); }
+  50% { transform: translate(-3%, 8%); }
+  67% { transform: translate(9%, 2%); }
+  83% { transform: translate(-8%, -5%); }
+}
+
+/* Ambient sound orb: a waveform in glass. Flat and still when silent;
+   moving, swelling with the bloom and rippling outwards when playing. */
+.sound-orb {
+  --amp: 0.1;
+}
+
+.sound-orb[data-on="true"] {
+  --amp: 0.45;
+}
+
+.sound-orb-ring {
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 1;
+  transition: stroke 0.6s ease;
+}
+
+.sound-orb:hover .sound-orb-ring,
+.sound-orb:focus-visible .sound-orb-ring,
+.sound-orb[data-on="true"] .sound-orb-ring {
+  stroke: color-mix(in oklab, var(--color-electric) 55%, transparent);
+}
+
+.sound-wave-amp {
+  transform-box: view-box;
+  transform-origin: center;
+  transform: scaleY(var(--amp));
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sound-wave {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke; /* keep the line even when squashed flat */
+  animation: soundWaveScroll 1.6s linear infinite;
+  animation-play-state: paused;
+}
+
+.sound-wave-a {
+  --shift: -16px;
+  stroke: #dbeafe;
+  stroke-width: 1.4;
+}
+
+.sound-wave-b {
+  --shift: -22px;
+  stroke: var(--color-nebula);
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+  animation-duration: 2.6s;
+}
+
+.sound-orb[data-on="true"] .sound-wave {
+  animation-play-state: running;
+}
+
+@keyframes soundWaveScroll {
+  to {
+    transform: translateX(var(--shift));
   }
 }
 
-body {
-  background-color: black;
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.sound-orb-ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid var(--color-electric);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.cosmic-bg {
-  background: radial-gradient(
-    circle at 50% 30%,
-    rgba(30, 58, 138, 0.25),
-    black 60%
-  );
+.sound-orb[data-on="true"] .sound-orb-ripple {
+  animation: orbRipple 3.2s ease-out infinite;
+}
+
+.sound-orb[data-on="true"] .sound-orb-ripple-late {
+  animation-delay: 1.6s;
+}
+
+@keyframes orbRipple {
+  from {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.sound-orb-label {
+  position: absolute;
+  right: calc(100% + 0.75rem);
+  top: 50%;
+  translate: 0 -50%;
+  white-space: nowrap;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.sound-orb:hover .sound-orb-label,
+.sound-orb:focus-visible .sound-orb-label {
+  opacity: 1;
+}
+
+/* Chapter navigation: stars of a constellation. The current chapter glows
+   in its realm's colour (space white, tech blue, nature green). */
+.chapter-star,
+.star-map-dot {
+  --tone: #ffffff;
+}
+
+.chapter-star[data-tone="tech"],
+.star-map-dot[data-tone="tech"] {
+  --tone: var(--color-electric);
+}
+
+.chapter-star[data-tone="nature"],
+.star-map-dot[data-tone="nature"] {
+  --tone: var(--color-bloom);
+}
+
+.chapter-star-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.35);
+  transition:
+    width 0.6s ease,
+    height 0.6s ease,
+    background-color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+
+.chapter-star:hover .chapter-star-dot,
+.chapter-star:focus-visible .chapter-star-dot {
+  width: 7px;
+  height: 7px;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.chapter-star[aria-current="true"] .chapter-star-dot {
+  width: 9px;
+  height: 9px;
+  background-color: var(--tone);
+  box-shadow: 0 0 12px 2px color-mix(in oklab, var(--tone) 70%, transparent);
+}
+
+.chapter-star-label {
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  top: 50%;
+  white-space: nowrap;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #ffffff;
+  opacity: 0;
+  translate: 6px -50%;
+  transition:
+    opacity 0.5s ease,
+    translate 0.5s ease;
+  pointer-events: none;
+}
+
+/* Hovering the constellation reveals every chapter's name (over a soft dark
+   backing, so they stay readable above content); the one under the pointer
+   (or the current chapter) shines brightest. */
+.chapter-rail::before {
+  content: "";
+  position: absolute;
+  top: -3rem;
+  bottom: -3rem;
+  right: -1.5rem;
+  width: 17rem;
+  background: linear-gradient(to left, color-mix(in oklab, var(--color-space) 88%, transparent) 40%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.chapter-rail:hover::before,
+.chapter-rail:focus-within::before {
+  opacity: 1;
+}
+
+.chapter-rail:hover .chapter-star-label,
+.chapter-rail:focus-within .chapter-star-label {
+  opacity: 0.4;
+  translate: 0 -50%;
+}
+
+.chapter-rail:hover .chapter-star[aria-current="true"] .chapter-star-label,
+.chapter-star:hover .chapter-star-label,
+.chapter-star:focus-visible .chapter-star-label {
+  opacity: 1;
+  translate: 0 -50%;
+}
+
+.star-map-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.star-map-dot[data-active="true"] {
+  background-color: var(--tone);
+  box-shadow: 0 0 12px 2px color-mix(in oklab, var(--tone) 70%, transparent);
 }
 
 .glow-text {
@@ -56,57 +291,601 @@ body {
   }
 }
 
-.seed-orb-wrapper {
-  width: 180px;
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+/* Scroll hint: light slowly drips down the line */
+.scroll-hint-line {
+  transform-origin: top;
+  animation: hintDrip 2.8s ease-in-out infinite;
 }
 
-.seed-orb {
-  width: 90px;
-  height: 90px;
-  border-radius: 9999px;
-
-  background: radial-gradient(
-    circle,
-    rgba(240, 249, 255, 1) 0%,
-    rgba(186, 230, 253, 0.95) 8%,
-    rgba(96, 165, 250, 0.55) 22%,
-    rgba(99, 102, 241, 0.25) 42%,
-    rgba(34, 197, 94, 0.08) 58%,
-    transparent 72%
-  );
-
-  box-shadow:
-    0 0 24px rgba(186, 230, 253, 0.9),
-    0 0 60px rgba(96, 165, 250, 0.65),
-    0 0 110px rgba(99, 102, 241, 0.35),
-    0 0 160px rgba(34, 197, 94, 0.18);
-
-  animation: seedPulse 4s ease-in-out infinite;
+@keyframes hintDrip {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  40% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
 }
 
-@keyframes seedPulse {
+/* Neural Garden: nodes breathe; hovering sends sap flowing down the roots */
+.garden-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nodeBreathe 5s ease-in-out infinite;
+}
+
+.garden-node.is-active {
+  animation-duration: 1.6s;
+}
+
+@keyframes nodeBreathe {
   0%, 100% {
     transform: scale(1);
-    opacity: 0.9;
-    box-shadow:
-      0 0 24px rgba(186, 230, 253, 0.9),
-      0 0 60px rgba(96, 165, 250, 0.65),
-      0 0 110px rgba(99, 102, 241, 0.35),
-      0 0 160px rgba(34, 197, 94, 0.18);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+}
+
+/* A single short dash (paths use pathLength="1") travelling along the root */
+.garden-sap {
+  stroke-dasharray: 0.18 1.2;
+  filter: drop-shadow(0 0 4px var(--color-electric));
+  animation: sapFlow 1.8s ease-in-out infinite;
+}
+
+@keyframes sapFlow {
+  from {
+    stroke-dashoffset: 0.18;
+  }
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+/* Quantum Roots fade in beneath the surface and dissolve at the bottom */
+.quantum-roots {
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 75%, transparent);
+}
+
+/* Nature & Vision: dark green ground, film grain and a slow organic wave */
+.nature-backdrop {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 45%, color-mix(in oklab, var(--color-bloom) 9%, transparent), transparent 70%),
+    linear-gradient(
+      to bottom,
+      transparent 2rem,
+      color-mix(in oklab, var(--color-forest) 70%, transparent) 20%,
+      color-mix(in oklab, var(--color-forest) 70%, transparent) 80%,
+      transparent
+    );
+}
+
+
+/* Slide one full wave period (1200 SVG units) for a seamless loop */
+.nature-wave {
+  animation: waveDrift 48s linear infinite;
+}
+
+.nature-wave-front {
+  animation-duration: 32s;
+  animation-direction: reverse;
+}
+
+@keyframes waveDrift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-1200px);
+  }
+}
+
+/* Growth Rings: nodes on the stem light up as it grows past them —
+   seed (education), leaf (work) or bloom (community) */
+.growth-node {
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: var(--color-space);
+  transition:
+    background-color 0.8s ease,
+    border-color 0.8s ease,
+    box-shadow 0.8s ease;
+}
+
+.growth-node[data-reached="true"][data-kind="work"] {
+  border-color: var(--color-electric);
+  background-color: var(--color-electric);
+  box-shadow: 0 0 14px 2px color-mix(in oklab, var(--color-electric) 60%, transparent);
+}
+
+.growth-node[data-reached="true"][data-kind="education"] {
+  border: 2px solid var(--color-bloom);
+  box-shadow: 0 0 14px 2px color-mix(in oklab, var(--color-bloom) 50%, transparent);
+}
+
+.growth-node[data-reached="true"][data-kind="community"] {
+  border-color: var(--color-bloom);
+  background-color: var(--color-bloom);
+  box-shadow: 0 0 14px 2px color-mix(in oklab, var(--color-bloom) 60%, transparent);
+}
+
+.growth-branch {
+  background-color: rgba(255, 255, 255, 0.18);
+  transform: scaleX(0);
+  transition: transform 0.9s 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.growth-branch[data-reached="true"] {
+  transform: scaleX(1);
+}
+
+.growth-bud {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  background-color: #dbeafe;
+  box-shadow: 0 0 14px 4px color-mix(in oklab, var(--color-electric) 60%, transparent);
+  animation: nodeBreathe 3s ease-in-out infinite;
+}
+
+/* Constellations of Work: a star that becomes a planet on hover */
+.project-star {
+  --hue: var(--color-electric);
+}
+
+.project-star[data-hue="nebula"],
+.project-planet[data-hue="nebula"] {
+  --hue: var(--color-nebula);
+}
+
+.project-star[data-hue="bloom"],
+.project-planet[data-hue="bloom"] {
+  --hue: var(--color-bloom);
+}
+
+.project-planet {
+  --hue: var(--color-electric);
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 34% 30%,
+    #ffffff 0%,
+    color-mix(in oklab, var(--hue) 75%, white) 12%,
+    var(--hue) 34%,
+    color-mix(in oklab, var(--hue) 30%, var(--color-space)) 72%,
+    var(--color-space) 100%
+  );
+  box-shadow:
+    0 0 30px 4px color-mix(in oklab, var(--hue) 45%, transparent),
+    inset -8px -10px 24px rgba(0, 0, 0, 0.55);
+  transform: scale(0.1);
+  opacity: 0;
+  transition:
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s ease;
+}
+
+.project-star:hover .project-planet,
+.project-star:focus-visible .project-planet,
+.project-planet[data-variant="open"] {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.project-planet[data-variant="compact"] {
+  transform: scale(0.7);
+  opacity: 1;
+}
+
+.project-star-core {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  box-shadow: 0 0 14px 3px color-mix(in oklab, var(--hue) 75%, transparent);
+  transition: opacity 0.5s ease;
+  animation: nodeBreathe 4s ease-in-out infinite;
+}
+
+.project-star:hover .project-star-core,
+.project-star:focus-visible .project-star-core {
+  opacity: 0;
+}
+
+/* A tilted ring, like a planet's orbit, appearing with the planet */
+.project-orbit {
+  position: absolute;
+  left: -22%;
+  right: -22%;
+  top: 38%;
+  height: 24%;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--hue) 55%, transparent);
+  transform: rotate(-16deg) scale(0.6);
+  opacity: 0;
+  transition:
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s ease;
+}
+
+.project-star:hover .project-orbit,
+.project-star:focus-visible .project-orbit {
+  transform: rotate(-16deg) scale(1);
+  opacity: 1;
+}
+
+.project-star-summary {
+  opacity: 0.7;
+  transition: opacity 0.5s ease;
+}
+
+.project-star:hover .project-star-summary,
+.project-star:focus-visible .project-star-summary {
+  opacity: 1;
+}
+
+/* Section tags: the tree-ring icon draws its rings in one by one */
+.section-ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.section-header[data-seen="true"] .section-ring {
+  animation: ringDraw 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.section-header[data-seen="true"] .section-ring:nth-child(2) { animation-delay: 0.25s; }
+.section-header[data-seen="true"] .section-ring:nth-child(3) { animation-delay: 0.5s; }
+.section-header[data-seen="true"] .section-ring:nth-child(4) { animation-delay: 0.75s; }
+
+@keyframes ringDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Skills network: each skill is a neuron that fires once as the section
+   enters, then glows when its species (or the skill itself) is hovered */
+.skill-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  /* Dark backing, so connections from the row above pass behind the words */
+  background-color: color-mix(in oklab, var(--color-space) 85%, transparent);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--color-gray-400);
+  opacity: 0.12;
+  transition:
+    opacity 0.8s ease var(--delay, 0s),
+    color 0.5s ease;
+}
+
+.skill-node[data-fired="true"] {
+  opacity: 1;
+}
+
+.skill-node[data-lit="true"] {
+  color: #ffffff;
+}
+
+.skill-node-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: color-mix(in oklab, var(--color-electric) 60%, transparent);
+  transition:
+    background-color 0.5s ease,
+    box-shadow 0.5s ease,
+    transform 0.5s ease;
+}
+
+.skill-node[data-fired="true"] .skill-node-dot {
+  animation: neuronFire 1.1s ease-out var(--delay, 0s) both;
+}
+
+.skill-node[data-lit="true"] .skill-node-dot {
+  background-color: #dbeafe;
+  box-shadow: 0 0 10px 2px color-mix(in oklab, var(--color-electric) 80%, transparent);
+  transform: scale(1.4);
+}
+
+@keyframes neuronFire {
+  0% {
+    transform: scale(0);
+    background-color: #ffffff;
+  }
+  30% {
+    transform: scale(2.4);
+    background-color: #ffffff;
+    box-shadow: 0 0 16px 4px color-mix(in oklab, var(--color-electric) 90%, transparent);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* A single signal along a connection (ambient firing) */
+.garden-sap.is-once {
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+/* Experience & Education: the year each ring began */
+.growth-year {
+  font-size: 3rem;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.08);
+  transition:
+    color 1s ease,
+    text-shadow 1s ease;
+}
+
+.growth-year[data-reached="true"] {
+  color: rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 24px color-mix(in oklab, var(--color-electric) 40%, transparent);
+}
+
+.growth-year-mobile {
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 1s ease;
+}
+
+.growth-year-mobile[data-reached="true"] {
+  color: var(--color-electric);
+}
+
+/* Research interests: a root grows down to each glowing tip */
+.interest-root {
+  display: block;
+  width: 1px;
+  height: 5rem;
+  transform-origin: top;
+  background: linear-gradient(to bottom, transparent, var(--color-bloom), var(--color-electric));
+}
+
+.interest-tip {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background-color: #d1fae5;
+  box-shadow: 0 0 14px 4px color-mix(in oklab, var(--color-bloom) 60%, transparent);
+}
+
+/* Résumé: the page floats gently, slightly tilted, with page two behind it;
+   hovering straightens it and lifts it towards you */
+.resume-sheet {
+  display: block;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.resume-sheet-front {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.8),
+    0 0 60px -10px color-mix(in oklab, var(--color-electric) 35%, transparent);
+  transform: rotate(-3deg);
+  transition:
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.9s ease;
+  animation: sheetFloat 7s ease-in-out infinite;
+}
+
+.resume-sheet-back {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotate(4deg) translate(6%, 3%);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.resume-preview:hover .resume-sheet-front,
+.resume-preview:focus-visible .resume-sheet-front {
+  transform: rotate(0deg) translateY(-8px) scale(1.02);
+  box-shadow:
+    0 40px 90px -20px rgba(0, 0, 0, 0.85),
+    0 0 80px -5px color-mix(in oklab, var(--color-electric) 55%, transparent);
+  animation-play-state: paused;
+}
+
+.resume-preview:hover .resume-sheet-back,
+.resume-preview:focus-visible .resume-sheet-back {
+  transform: rotate(7deg) translate(10%, 4%);
+}
+
+.resume-preview-hint {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 2.5rem 1rem 1rem;
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: linear-gradient(to top, rgba(11, 15, 26, 0.85), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.resume-preview:hover .resume-preview-hint,
+.resume-preview:focus-visible .resume-preview-hint {
+  opacity: 1;
+}
+
+@keyframes sheetFloat {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+
+/* Download arrow drops like a falling star on hover */
+.resume-download-icon {
+  display: inline-flex;
+}
+
+.resume-download:hover .resume-download-icon {
+  animation: arrowDrop 1.1s ease-in-out infinite;
+}
+
+@keyframes arrowDrop {
+  0%, 100% { transform: translateY(-1px); }
+  50% { transform: translateY(3px); }
+}
+
+/* Custom cursor: a small star. Blue pulse over tech, green glow + pollen over nature */
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none;
+}
+
+.has-custom-cursor :is(input, textarea, select) {
+  cursor: text;
+}
+
+.cosmic-cursor {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.cosmic-cursor[data-visible="true"] {
+  opacity: 1;
+}
+
+.cosmic-cursor :is(.cursor-star, .cursor-ring, .cursor-aura) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.5s ease,
+    height 0.5s ease,
+    opacity 0.6s ease,
+    background-color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+
+.cursor-star {
+  width: 6px;
+  height: 6px;
+  background-color: #ffffff;
+  box-shadow:
+    0 0 8px 2px rgba(255, 255, 255, 0.6),
+    0 0 18px 4px color-mix(in oklab, var(--color-electric) 35%, transparent);
+}
+
+.cursor-ring {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-electric);
+  opacity: 0;
+}
+
+.cursor-aura {
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-bloom) 35%, transparent), transparent 70%);
+  opacity: 0;
+}
+
+.cosmic-cursor[data-realm="tech"] .cursor-star {
+  background-color: #dbeafe;
+  box-shadow: 0 0 10px 2px color-mix(in oklab, var(--color-electric) 80%, transparent);
+}
+
+.cosmic-cursor[data-realm="tech"] .cursor-ring {
+  animation: cursorPulse 2.2s ease-out infinite;
+}
+
+@keyframes cursorPulse {
+  from {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+}
+
+.cosmic-cursor[data-realm="nature"] .cursor-star {
+  background-color: #d1fae5;
+  box-shadow: 0 0 10px 3px color-mix(in oklab, var(--color-bloom) 70%, transparent);
+}
+
+.cosmic-cursor[data-realm="nature"] .cursor-aura {
+  opacity: 1;
+}
+
+.cosmic-cursor[data-interactive="true"] .cursor-star {
+  width: 10px;
+  height: 10px;
+}
+
+.cursor-pollen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 9999px;
+  background-color: #a7f3d0;
+  box-shadow: 0 0 6px color-mix(in oklab, var(--color-bloom) 80%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garden-node,
+  .nature-wave,
+  .film-grain,
+  .growth-bud,
+  .project-star-core,
+  .skill-node-dot,
+  .resume-sheet-front,
+  .resume-download-icon {
+    animation: none !important;
   }
 
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-    box-shadow:
-      0 0 34px rgba(240, 249, 255, 1),
-      0 0 85px rgba(96, 165, 250, 0.85),
-      0 0 140px rgba(99, 102, 241, 0.5),
-      0 0 200px rgba(34, 197, 94, 0.25);
+  .section-ring {
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
+
+  .sound-orb[data-on="true"] :is(.sound-wave, .sound-orb-ripple) {
+    animation: none;
+  }
+
+  .garden-sap {
+    stroke-dasharray: none;
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-text,
+  .scroll-hint-line {
+    animation: none;
   }
 }

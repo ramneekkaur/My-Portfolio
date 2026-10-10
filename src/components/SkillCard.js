@@ -1,15 +1,23 @@
 "use client";
 
-import { motion } from "framer-motion";
-
-export default function SkillCard({ title, description }) {
+// A skill as a "species" in the Neural Garden. Its root and breathing node
+// are drawn by NeuralGarden; hovering lights them up.
+export default function SkillCard({ ref, index, title, description, tags = [], active, onActivate, onDeactivate }) {
   return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.3 }}
-      className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm hover:border-blue-300/40 hover:bg-blue-300/[0.06]"
+    <div
+      ref={ref}
+      data-cursor="interactive"
+      onPointerEnter={onActivate}
+      onPointerLeave={onDeactivate}
+      className={`rounded-2xl border p-6 pt-8 backdrop-blur-sm transition-colors duration-700 ${
+        active
+          ? "border-electric/40 bg-electric/[0.06]"
+          : "border-white/10 bg-white/[0.03]"
+      }`}
     >
-      <div className="mb-5 h-2 w-2 rounded-full bg-blue-300 shadow-[0_0_20px_rgba(147,197,253,0.9)]" />
+      <p className="mb-4 text-[0.65rem] uppercase tracking-[0.35em] text-electric/70">
+        Species {String(index + 1).padStart(2, "0")}
+      </p>
 
       <h3 className="text-xl font-semibold text-white mb-3">
         {title}
@@ -18,6 +26,14 @@ export default function SkillCard({ title, description }) {
       <p className="text-gray-400 leading-relaxed">
         {description}
       </p>
-    </motion.div>
+
+      {tags.length > 0 && (
+        <ul className="mt-5 flex flex-wrap gap-x-3 gap-y-1 text-xs text-electric/70 lg:hidden">
+          {tags.map((tag) => (
+            <li key={tag}>{tag}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

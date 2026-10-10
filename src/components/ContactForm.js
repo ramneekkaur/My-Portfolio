@@ -52,14 +52,14 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto max-w-2xl space-y-5"
+      className="w-full space-y-5"
     >
       <input
         name="name"
         value={form.name}
         onChange={handleChange}
         placeholder="Your name"
-        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-5 py-4 text-white placeholder:text-gray-500 outline-none focus:border-blue-300/50"
+        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-5 py-4 text-white placeholder:text-gray-500 outline-none focus:border-electric/50"
       />
 
       <input
@@ -68,7 +68,7 @@ export default function ContactForm() {
         value={form.email}
         onChange={handleChange}
         placeholder="Your email"
-        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-5 py-4 text-white placeholder:text-gray-500 outline-none focus:border-blue-300/50"
+        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-5 py-4 text-white placeholder:text-gray-500 outline-none focus:border-electric/50"
       />
 
       <textarea
@@ -77,12 +77,12 @@ export default function ContactForm() {
         onChange={handleChange}
         placeholder="Send a signal..."
         rows="6"
-        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-5 py-4 text-white placeholder:text-gray-500 outline-none focus:border-blue-300/50"
+        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-5 py-4 text-white placeholder:text-gray-500 outline-none focus:border-electric/50"
       />
 
       <button
         type="submit"
-        className="rounded-full bg-white px-8 py-4 font-medium text-black transition hover:bg-blue-200"
+        className="rounded-full bg-white px-8 py-4 font-medium text-black transition hover:bg-electric"
       >
         Transmit Signal
       </button>

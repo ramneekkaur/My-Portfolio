@@ -1,141 +1,111 @@
-"use client";
-
-import { motion } from "framer-motion";
-import Starfield from "@/components/Starfield";
-import SeedOrb from "@/components/SeedOrb";
+import CosmicScene from "@/components/scene/CosmicScene";
+import Hero from "@/components/Hero";
+import Letterbox from "@/components/Letterbox";
+import ChapterNav from "@/components/ChapterNav";
+import Reveal from "@/components/Reveal";
 import SectionHeader from "@/components/SectionHeader";
-import SkillCard from "@/components/SkillCard";
-import ProjectCard from "@/components/ProjectCard";
+import NeuralGarden from "@/components/NeuralGarden";
+import QuantumRoots from "@/components/QuantumRoots";
+import GrowthRings from "@/components/GrowthRings";
+import ProjectConstellation from "@/components/ProjectConstellation";
 import ContactForm from "@/components/ContactForm";
-import { skills, projects } from "@/data/profile";
+import SignalChannels from "@/components/SignalChannels";
+import NatureBackdrop from "@/components/NatureBackdrop";
+import NatureGallery from "@/components/NatureGallery";
+import InterestRoots from "@/components/InterestRoots";
+import ResumeChart from "@/components/ResumeChart";
+import { chapter } from "@/lib/chapters";
+import { profile, skills, timeline, projects, interests, languages, naturePhotos } from "@/data/profile";
 
 export default function Home() {
   return (
-    <main className="cosmic-bg text-white overflow-hidden">
-      <Starfield />
+    <main className="text-white overflow-x-clip">
+      <CosmicScene />
+      <ChapterNav />
 
-      {/* Hero */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-6"
-      >
-        <SeedOrb />
+      {/* Hero – Cosmic Seed */}
+      <Letterbox />
+      <Hero />
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 2.2, delay: 1 }}
-          className="text-4xl md:text-7xl font-bold glow-text max-w-5xl mt-10"
-        >
-          Cultivating Intelligence Across the Cosmos
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 2, delay: 1.6 }}
-          className="text-lg text-gray-400 max-w-xl mt-6"
-        >
-          Exploring AI, Quantum Systems, and the Cosmos — inspired by Nature.
-        </motion.p>
-      </motion.section>
-
-      {/* Neural Ecosystem */}
-      <section className="min-h-screen px-6 py-28 flex items-center">
+      {/* Neural Garden */}
+      <section id="neural-garden" data-realm="tech" className="min-h-screen px-6 py-28 flex items-center">
         <div className="w-full max-w-6xl mx-auto">
-          <SectionHeader
-            eyebrow="Section 01"
-            title="Neural Ecosystem"
-          >
-            I explore intelligent systems as living networks — where algorithms,
-            data, and curiosity grow like roots beneath the surface.
+          <SectionHeader chapter={chapter("neural-garden")}>
+            Four years of building software, machine learning and AI-driven
+            systems — with a growing focus on LLM applications. Every skill is a
+            species in this garden, growing from the same roots.
           </SectionHeader>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mt-16">
-            {skills.map((skill) => (
-              <SkillCard
-                key={skill.title}
-                title={skill.title}
-                description={skill.description}
-              />
-            ))}
-          </div>
+          <NeuralGarden skills={skills} />
         </div>
       </section>
 
-      {/* Quantum Roots */}
-      <section className="min-h-screen px-6 py-28 flex items-center">
+      {/* Growth Rings – experience, education & volunteering */}
+      <section id="growth-rings" data-realm="tech" className="px-6 py-28">
         <div className="w-full max-w-5xl mx-auto">
-          <SectionHeader
-            eyebrow="Section 02"
-            title="Quantum Roots"
-          >
-            The most powerful systems grow where we cannot see.
+          <SectionHeader chapter={chapter("growth-rings")}>
+            Every season of work and study leaves a ring. This is how the
+            garden grew — from data analysis to leading teams to teaching AI.
           </SectionHeader>
 
-          <motion.div
-            initial={{ opacity: 0, y: 70 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2 }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="mt-16 rounded-3xl border border-white/10 bg-white/[0.03] p-8 md:p-12 backdrop-blur-sm"
-          >
-            <p className="text-gray-300 text-lg md:text-xl leading-relaxed">
-              Quantum computing fascinates me because it challenges ordinary
-              thinking. It teaches that reality can be probabilistic, layered,
-              and deeply interconnected. I want my work to reflect that same
-              curiosity — building systems that are not only functional, but
-              also imaginative.
-            </p>
-          </motion.div>
+          <GrowthRings entries={timeline} />
         </div>
       </section>
 
-      {/* Projects */}
-      <section className="min-h-screen px-6 py-28 flex items-center">
+      {/* Constellation Projects */}
+      <section id="projects" data-realm="tech" className="min-h-screen px-6 py-28 flex items-center">
         <div className="w-full max-w-6xl mx-auto">
-          <SectionHeader
-            eyebrow="Section 03"
-            title="Constellations of Work"
-          >
+          <SectionHeader chapter={chapter("projects")}>
             Each project is a star in a growing system of experiments,
             questions, and discoveries.
           </SectionHeader>
 
-          <div className="grid md:grid-cols-3 gap-6 mt-16">
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.title}
-                title={project.title}
-                type={project.type}
-                description={project.description}
-                status={project.status}
-              />
-            ))}
-          </div>
+          <ProjectConstellation projects={projects} />
+        </div>
+      </section>
+
+      {/* Quantum Roots */}
+      <section id="quantum-roots" data-realm="tech" className="relative isolate min-h-screen px-6 py-28 flex items-center">
+        <QuantumRoots />
+
+        <div className="w-full max-w-5xl mx-auto">
+          <SectionHeader chapter={chapter("quantum-roots")}>
+            The most powerful systems grow where we cannot see.
+          </SectionHeader>
+
+          <Reveal className="mt-16 rounded-3xl border border-white/10 bg-white/[0.03] p-8 md:p-12 backdrop-blur-sm">
+            <p className="mb-4 text-[0.65rem] uppercase tracking-[0.35em] text-electric">Philosophy</p>
+            <p className="text-gray-300 text-lg md:text-xl leading-relaxed">
+              Quantum computing fascinates me because it challenges ordinary
+              thinking. It teaches that reality can be probabilistic, layered,
+              and deeply interconnected.
+            </p>
+
+            <p className="mb-4 mt-10 text-[0.65rem] uppercase tracking-[0.35em] text-electric">What drives me</p>
+            <p className="glow-text text-2xl md:text-3xl font-light leading-snug">
+              I want my work to reflect that same curiosity — building systems
+              that are not only functional, but also imaginative.
+            </p>
+          </Reveal>
+
+          <p className="mb-2 mt-20 text-center text-[0.65rem] uppercase tracking-[0.35em] text-bloom">
+            Research interests
+          </p>
+          <InterestRoots interests={interests} />
         </div>
       </section>
 
       {/* Nature & Vision */}
-      <section className="min-h-screen px-6 py-28 flex items-center">
+      <section id="nature" data-realm="nature" className="relative isolate min-h-screen px-6 py-40 flex items-center">
+        <NatureBackdrop />
+
         <div className="w-full max-w-5xl mx-auto">
-          <SectionHeader
-            eyebrow="Section 04"
-            title="Nature & Vision"
-          >
+          <SectionHeader chapter={chapter("nature")}>
             Technology should not dominate nature. It should grow with it.
           </SectionHeader>
 
-          <motion.div
-            initial={{ opacity: 0, y: 70 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2 }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="mt-16 grid md:grid-cols-2 gap-6"
-          >
-            <div className="rounded-3xl border border-emerald-300/10 bg-emerald-300/[0.04] p-8">
+          <Reveal className="mt-16 grid md:grid-cols-2 gap-6">
+            <div className="rounded-3xl border border-bloom/10 bg-bloom/[0.04] p-8">
               <h3 className="text-2xl font-semibold mb-4">
                 Gardening & Growth
               </h3>
@@ -146,7 +116,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-blue-300/10 bg-blue-300/[0.04] p-8">
+            <div className="rounded-3xl border border-electric/10 bg-electric/[0.04] p-8">
               <h3 className="text-2xl font-semibold mb-4">
                 Science Fiction & Space
               </h3>
@@ -156,26 +126,42 @@ export default function Home() {
                 expand together.
               </p>
             </div>
-          </motion.div>
+          </Reveal>
+
+          <NatureGallery photos={naturePhotos} />
+        </div>
+      </section>
+
+      {/* Résumé – the whole star chart, to download */}
+      <section id="resume" className="min-h-screen px-6 py-28 flex items-center">
+        <div className="w-full max-w-5xl mx-auto">
+          <SectionHeader chapter={chapter("resume")}>
+            Skills, experience, education and projects — everything above,
+            charted on two pages.
+          </SectionHeader>
+
+          <ResumeChart resume={profile.resume} />
         </div>
       </section>
 
       {/* Contact */}
-      <section className="min-h-screen px-6 py-28 flex items-center">
+      <section id="contact" className="min-h-screen px-6 py-28 flex items-center">
         <div className="w-full max-w-5xl mx-auto">
-          <SectionHeader
-            eyebrow="Final Transmission"
-            title="Send a Signal"
-          >
+          <SectionHeader chapter={chapter("contact")}>
             If you want to collaborate, discuss ideas, or explore intelligent
             systems together, transmit a message.
           </SectionHeader>
 
-          <div className="mt-16">
+          <div className="mt-16 grid gap-14 md:grid-cols-[1fr_1.4fr] md:gap-16">
+            <SignalChannels profile={profile} languages={languages} />
             <ContactForm />
           </div>
         </div>
       </section>
+
+      <footer className="px-6 pb-12 text-center text-[0.65rem] uppercase tracking-[0.35em] text-gray-500">
+        {profile.name} · Cultivated in {profile.location.split(",")[0]} · © {new Date().getFullYear()}
+      </footer>
     </main>
   );
 }
