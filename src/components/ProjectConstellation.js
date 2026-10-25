@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { lockScroll } from "@/lib/smoothScroll";
-import { useMediaQuery } from "@/lib/useMediaQuery";
+import { startWarp } from "@/lib/warpState";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/useMediaQuery";
 
 // Desktop layout, in % of the constellation area: projects zig-zag across,
 // with a faint companion star between each pair and at both ends.
@@ -55,78 +56,81 @@ function ProjectDetail({ project, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={`project-${project.id}-title`}
-        data-lenis-prevent
-        className="relative max-h-full w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-space/90 p-7 md:p-12"
+        className="panel relative w-full max-w-3xl"
       >
-        <button
-          type="button"
-          autoFocus
-          onClick={onClose}
-          aria-label="Close project"
-          className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 transition-colors hover:border-white/30"
-        >
-          <span className="absolute h-px w-4 rotate-45 bg-white" />
-          <span className="absolute h-px w-4 -rotate-45 bg-white" />
-        </button>
+        <p className="panel-title">[ Project file · {project.id} ]</p>
 
-        <div className="flex items-center gap-6 pr-12">
-          <Planet project={project} variant="open" className="relative h-20 w-20 shrink-0 md:h-28 md:w-28" />
-          <div>
-            <p className="text-[0.65rem] uppercase tracking-[0.35em] text-nebula">{project.type}</p>
-            <h3 id={`project-${project.id}-title`} className="mt-2 text-3xl font-semibold md:text-4xl">
-              {project.title}
-            </h3>
-            {project.status && (
-              <span className="mt-3 inline-block rounded-full border border-white/10 px-3 py-1 text-xs text-gray-400">
-                {project.status}
-              </span>
-            )}
-          </div>
-        </div>
+        <div data-lenis-prevent className="max-h-[calc(100vh-4rem)] overflow-y-auto p-7 pt-10 md:max-h-[calc(100vh-6rem)] md:p-12">
+          <button
+            type="button"
+            autoFocus
+            onClick={onClose}
+            aria-label="Close project"
+            className="btn-terminal absolute right-5 top-5 px-3 py-2"
+          >
+            X
+          </button>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
-        >
-          <p className="mt-8 text-lg leading-relaxed text-gray-300">{project.description}</p>
-
-          {project.highlights && (
-            <dl className="mt-10 grid gap-6 sm:grid-cols-2">
-              {project.highlights.map((highlight) => (
-                <div key={highlight.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                  <dt className="sr-only">{highlight.label}</dt>
-                  <dd className="glow-text text-4xl font-light">{highlight.value}</dd>
-                  <dd className="mt-2 text-sm text-gray-400">{highlight.label}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-
-          <ul className="mt-10 flex flex-wrap gap-2">
-            {project.tech.map((tech) => (
-              <li key={tech} className="rounded-full border border-white/10 px-3 py-1 text-xs text-gray-300">
-                {tech}
-              </li>
-            ))}
-          </ul>
-
-          {project.links?.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-4">
-              {project.links.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-electric"
-                >
-                  {link.label}
-                </a>
-              ))}
+          <div className="flex items-center gap-6 pr-16">
+            <Planet project={project} variant="open" className="relative h-20 w-20 shrink-0 md:h-28 md:w-28" />
+            <div>
+              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-nebula">{project.type}</p>
+              <h3
+                id={`project-${project.id}-title`}
+                className="mt-2 font-display text-2xl font-bold uppercase tracking-wide md:text-3xl"
+              >
+                {project.title}
+              </h3>
+              {project.status && (
+                <span className="mt-3 inline-block text-[0.65rem] uppercase tracking-[0.25em] text-phosphor">
+                  <span aria-hidden="true" className="blink">●</span> {project.status}
+                </span>
+              )}
             </div>
-          )}
-        </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25 }}
+          >
+            <p className="mt-8 leading-relaxed text-gray-300">{project.description}</p>
+
+            {project.highlights && (
+              <dl className="mt-10 grid gap-6 sm:grid-cols-2">
+                {project.highlights.map((highlight) => (
+                  <div key={highlight.label} className="rounded-[2px] border border-phosphor/25 p-5">
+                    <dt className="sr-only">{highlight.label}</dt>
+                    <dd className="glow-text font-display text-4xl font-bold text-phosphor">{highlight.value}</dd>
+                    <dd className="mt-2 text-xs uppercase tracking-wider text-gray-400">{highlight.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            <ul className="mt-10 flex flex-wrap gap-x-4 gap-y-2 text-[0.7rem] uppercase tracking-wider text-electric/80">
+              {project.tech.map((tech) => (
+                <li key={tech}>[{tech}]</li>
+              ))}
+            </ul>
+
+            {project.links?.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-4">
+                {project.links.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-terminal btn-terminal-primary"
+                  >
+                    {link.label} ↗
+                  </a>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );
@@ -145,7 +149,7 @@ function DesktopConstellation({ projects, openId, onOpen }) {
             y1={`${a.y}%`}
             x2={`${b.x}%`}
             y2={`${b.y}%`}
-            className="stroke-white/15"
+            className="stroke-white/20"
             strokeWidth="1"
             initial={{ pathLength: 0 }}
             whileInView={{ pathLength: 1 }}
@@ -154,7 +158,7 @@ function DesktopConstellation({ projects, openId, onOpen }) {
           />
         ))}
         {companions.map((star, i) => (
-          <circle key={i} cx={`${star.x}%`} cy={`${star.y}%`} r="1.5" className="fill-white/40" />
+          <circle key={i} cx={`${star.x}%`} cy={`${star.y}%`} r="1.5" className="fill-white/45" />
         ))}
       </svg>
 
@@ -169,14 +173,13 @@ function DesktopConstellation({ projects, openId, onOpen }) {
           style={{ left: `${stars[i].x}%`, top: `${stars[i].y}%` }}
           className="project-star group absolute flex w-56 -translate-x-1/2 -translate-y-12 flex-col items-center text-center outline-none"
         >
-          <span className="relative flex h-24 w-24 items-center justify-center">
+          <span data-warp-origin className="relative flex h-24 w-24 items-center justify-center">
             {openId !== project.id && <Planet project={project} variant="star" className="absolute inset-0" />}
-            <span aria-hidden="true" className="project-orbit" />
             <span aria-hidden="true" className="project-star-core" />
           </span>
           <span className="mt-3 text-[0.6rem] uppercase tracking-[0.3em] text-nebula/80">{project.type}</span>
-          <span className="mt-2 text-xl font-semibold">{project.title}</span>
-          <span className="project-star-summary mt-2 text-sm leading-relaxed text-gray-400">{project.summary}</span>
+          <span className="mt-2 font-display text-base font-bold uppercase tracking-wide">{project.title}</span>
+          <span className="project-star-summary mt-2 text-xs leading-relaxed text-gray-400">{project.summary}</span>
         </button>
       ))}
     </div>
@@ -199,9 +202,9 @@ function MobileConstellation({ projects, openId, onOpen }) {
               {openId !== project.id && <Planet project={project} variant="compact" className="absolute inset-0" />}
             </span>
             <span className="block text-[0.6rem] uppercase tracking-[0.3em] text-nebula/80">{project.type}</span>
-            <span className="mt-2 block text-xl font-semibold">{project.title}</span>
-            <span className="mt-2 block text-sm leading-relaxed text-gray-400">{project.summary}</span>
-            <span className="mt-3 block text-[0.6rem] uppercase tracking-[0.3em] text-electric">Explore →</span>
+            <span className="mt-2 block font-display text-base font-bold uppercase tracking-wide">{project.title}</span>
+            <span className="mt-2 block text-xs leading-relaxed text-gray-400">{project.summary}</span>
+            <span className="mt-3 block text-[0.6rem] uppercase tracking-[0.3em] text-phosphor">&gt; Explore</span>
           </button>
         </li>
       ))}
@@ -217,8 +220,16 @@ export default function ProjectConstellation({ projects }) {
   const trigger = useRef(null);
   const openProject = projects.find((project) => project.id === openId);
 
-  const onOpen = (id, element) => {
+  const reduceMotion = usePrefersReducedMotion();
+
+  // Warp into the star, then open its project file at the peak of the dive.
+  const onOpen = async (id, element) => {
     trigger.current = element;
+    if (!reduceMotion) {
+      const star = element.querySelector("[data-warp-origin]") ?? element;
+      const rect = star.getBoundingClientRect();
+      await startWarp(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
     setOpenId(id);
   };
 
@@ -242,8 +253,8 @@ export default function ProjectConstellation({ projects }) {
   return (
     <>
       <Layout projects={projects} openId={openId} onOpen={onOpen} />
-      <p className="mt-10 text-center text-[0.65rem] uppercase tracking-[0.35em] text-gray-500">
-        {projects.length} projects · {isMobile ? "tap a planet to explore" : "select a star to explore"}
+      <p className="mt-10 text-center text-[0.65rem] uppercase tracking-[0.3em] text-phosphor/70">
+        &gt; {projects.length} projects · {isMobile ? "tap a planet to explore" : "select a star to explore"}
       </p>
       <AnimatePresence>
         {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}

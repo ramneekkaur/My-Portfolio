@@ -8,7 +8,7 @@ import { lockScroll, scrollToSection } from "@/lib/smoothScroll";
 
 // Desktop rail: the chapters drawn as a small constellation.
 const STAR_SPACING = 40;
-const STAR_X = [6, 18, 8, 20, 10, 16, 7, 17]; // gentle zig-zag, like a real constellation
+const STAR_X = [6, 18, 8, 20, 10, 16, 7]; // gentle zig-zag, like a real constellation
 const RAIL_WIDTH = 26;
 const RAIL_HEIGHT = (CHAPTERS.length - 1) * STAR_SPACING;
 
@@ -149,10 +149,10 @@ function StarMapMenu({ active, visible }) {
         initial={{ opacity: 0 }}
         animate={visible ? { opacity: 1 } : undefined}
         transition={{ duration: 1.5, delay: 5 }}
-        className="fixed right-5 top-5 z-[85] flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-space/40 backdrop-blur-md"
+        className="fixed right-5 top-5 z-[85] flex h-11 w-11 items-center justify-center rounded-[2px] border border-phosphor/30 bg-space/60 text-phosphor backdrop-blur-md"
       >
         {/* A tiny three-star constellation */}
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" className="text-white">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20">
           <path d="M3 14 L9 6 L17 11" fill="none" stroke="currentColor" strokeOpacity="0.4" strokeWidth="1" />
           <circle cx="3" cy="14" r="1.6" fill="currentColor" />
           <circle cx="9" cy="6" r="2" fill="currentColor" />
@@ -178,13 +178,12 @@ function StarMapMenu({ active, visible }) {
               autoFocus
               onClick={() => setOpen(false)}
               aria-label="Close chapters"
-              className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border border-white/10"
+              className="btn-terminal absolute right-5 top-5 px-3 py-2"
             >
-              <span className="absolute h-px w-4 rotate-45 bg-white" />
-              <span className="absolute h-px w-4 -rotate-45 bg-white" />
+              X
             </button>
 
-            <p className="mb-10 text-[0.65rem] uppercase tracking-[0.4em] text-electric">Star map</p>
+            <p className="term-label mb-10">Star_map</p>
 
             <ol className="relative ml-1 space-y-6 border-l border-white/10">
               {CHAPTERS.map((chapter, i) => (
@@ -213,7 +212,7 @@ function StarMapMenu({ active, visible }) {
                   >
                     <span className="text-xs tracking-[0.3em] text-gray-500">{chapter.number}</span>
                     <span>
-                      <span className="block text-2xl font-light leading-tight">{chapter.label}</span>
+                      <span className="block font-display text-lg font-bold uppercase leading-tight tracking-wide">{chapter.label}</span>
                       <span className="mt-1 block text-[0.6rem] uppercase tracking-[0.3em] text-gray-500">
                         {chapter.title}
                       </span>

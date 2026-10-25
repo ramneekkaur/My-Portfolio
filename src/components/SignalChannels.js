@@ -1,41 +1,75 @@
+import { statSync } from "node:fs";
+import path from "node:path";
 import Reveal from "@/components/Reveal";
 
-// Direct ways to reach Ramneek, and the languages ("frequencies") she speaks.
+// File size read from the PDF itself at build time, so it is always accurate.
+function fileSize(href) {
+  try {
+    const bytes = statSync(path.join(process.cwd(), "public", href)).size;
+    return `${Math.round(bytes / 1024)} KB`;
+  } catch {
+    return null;
+  }
+}
+
+function Label({ children }) {
+  return <p className="term-label mb-3">{children}</p>;
+}
+
+// Ramneek's personal details: email addresses, résumé, profiles and the
+// languages ("frequencies") she speaks.
 export default function SignalChannels({ profile, languages }) {
+  const { resume } = profile;
+  const details = ["PDF", `${resume.pages} pages`, fileSize(resume.href), `Updated ${resume.updated}`].filter(Boolean);
+
   return (
     <Reveal className="space-y-10">
       <div>
-        <p className="mb-3 text-[0.65rem] uppercase tracking-[0.4em] text-electric">Direct channel</p>
-        <a
-          href={`mailto:${profile.email}`}
-          className="break-all text-xl text-white underline decoration-white/20 underline-offset-8 transition-colors hover:decoration-electric md:text-2xl"
-        >
-          {profile.email}
-        </a>
-        <p className="mt-4 text-sm text-gray-400">{profile.location}</p>
+        <Label>Direct_channels</Label>
+        <ul className="space-y-4">
+          {profile.emails.map((email) => (
+            <li key={email.address}>
+              <span className="block text-[0.65rem] uppercase tracking-[0.25em] text-gray-500">{email.label}</span>
+              <a
+                href={`mailto:${email.address}`}
+                className="text-base text-white underline decoration-phosphor/30 underline-offset-8 transition-colors [overflow-wrap:anywhere] hover:decoration-phosphor md:text-lg"
+              >
+                {email.address}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-5 text-sm text-gray-400">{profile.location}</p>
       </div>
 
       <div>
-        <p className="mb-3 text-[0.65rem] uppercase tracking-[0.4em] text-electric">Orbits</p>
+        <Label>Résumé</Label>
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href={resume.href}
+            download={resume.fileName}
+            className="resume-download btn-terminal btn-terminal-primary"
+          >
+            <span aria-hidden="true" className="resume-download-icon">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 2 V10 M4.5 6.5 L8 10 L11.5 6.5 M3 13.5 H13" />
+              </svg>
+            </span>
+            Download résumé
+          </a>
+          <a href={resume.href} target="_blank" rel="noreferrer" className="btn-terminal">
+            Open <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <p className="mt-3 text-[0.6rem] uppercase tracking-[0.3em] text-gray-500">{details.join(" · ")}</p>
+      </div>
+
+      <div>
+        <Label>Orbits</Label>
         <ul className="flex flex-wrap gap-3">
-          <li>
-            <a
-              href={profile.resume.href}
-              download={profile.resume.fileName}
-              className="inline-flex items-center gap-2 rounded-full border border-electric/30 px-5 py-2.5 text-sm text-electric transition-colors hover:border-electric/60 hover:text-white"
-            >
-              Résumé
-              <span aria-hidden="true">↓</span>
-            </a>
-          </li>
           {profile.links.map((link) => (
             <li key={link.href}>
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm text-gray-300 transition-colors hover:border-electric/40 hover:text-white"
-              >
+              <a href={link.href} target="_blank" rel="noreferrer" className="btn-terminal">
                 {link.label}
                 <span aria-hidden="true">↗</span>
               </a>
@@ -45,12 +79,13 @@ export default function SignalChannels({ profile, languages }) {
       </div>
 
       <div>
-        <p className="mb-3 text-[0.65rem] uppercase tracking-[0.4em] text-electric">Frequencies</p>
-        <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+        <Label>Frequencies</Label>
+        <ul className="max-w-sm space-y-2 text-xs uppercase tracking-wider">
           {languages.map((language) => (
-            <li key={language.name}>
+            <li key={language.name} className="flex items-baseline gap-2">
               <span className="text-white">{language.name}</span>
-              <span className="block text-xs text-gray-500">{language.level}</span>
+              <span aria-hidden="true" className="flex-1 border-b border-dotted border-phosphor/30" />
+              <span className="text-phosphor">{language.level}</span>
             </li>
           ))}
         </ul>

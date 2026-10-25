@@ -6,4 +6,8 @@ export const palette = {
   bloom: "#3dbe8b", // muted emerald nature glow
   moss: "#6b8f71", // soft moss
   forest: "#0f2a20", // dark green ground of the Nature section
+  phosphor: "#8cc8ff", // ice-blue phosphor text (retro mission-control)
+  blossom: "#e8a3bd", // dusty-rose blossoms of the Garden World
+  blossomLight: "#f8dbe6", // pale petal tips
+  leaf: "#4f9a6f", // living branches
 };

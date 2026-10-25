@@ -5,9 +5,14 @@
 //   harmonics higher notes that open up as the flower blooms
 //   chime     a soft bell the moment the flower opens
 //
+// In the Garden World it crossfades to the sea and birdsong (natureSound.js).
 // Everything feeds a gentle echo so it feels spacious.
 
+import { createNature } from "./natureSound";
+
 const MASTER_VOLUME = 0.22;
+const SCENE_FADE = 0.8; // time constant of the space ↔ garden crossfade (~2.5 s)
+const LOOKAHEAD = 4; // seconds of waves and birds kept queued
 const DRONE_NOTES = [55, 82.41, 110]; // A1, E2, A2
 const BLOOM_NOTES = [164.81, 220, 329.63]; // E3, A3, E4
 const CHIME_PARTIALS = [
@@ -58,6 +63,21 @@ export function createAmbience() {
   master.gain.value = 0;
   master.connect(context.destination);
 
+  // Two scenes, crossfaded: the space drone and the garden's sea and birds
+  const spaceBus = context.createGain();
+  const gardenBus = context.createGain();
+  gardenBus.gain.value = 0;
+  spaceBus.connect(master);
+  gardenBus.connect(master);
+  const gardenMeter = context.createAnalyser();
+  gardenMeter.fftSize = 1024;
+  gardenBus.connect(gardenMeter);
+  const meterData = new Float32Array(gardenMeter.fftSize);
+  let nature = null;
+  let scene = null;
+  let scheduler = null;
+  let natureStopTimer = null;
+
   // Echo
   const echo = context.createDelay(2);
   const echoFeedback = context.createGain();
@@ -74,7 +94,7 @@ export function createAmbience() {
   droneFilter.type = "lowpass";
   droneFilter.frequency.value = 300;
   droneFilter.Q.value = 0.7;
-  droneFilter.connect(master);
+  droneFilter.connect(spaceBus);
 
   const droneGain = context.createGain();
   droneGain.gain.value = 0.5;
@@ -120,7 +140,7 @@ export function createAmbience() {
   const airGain = context.createGain();
   airGain.gain.value = 0.08;
 
-  noise.connect(airFilter).connect(airGain).connect(master);
+  noise.connect(airFilter).connect(airGain).connect(spaceBus);
   noise.start();
 
   return {
@@ -163,8 +183,44 @@ export function createAmbience() {
       });
     },
 
+    // "space" or "garden"; the first call switches at once, later ones crossfade
+    setScene(next) {
+      if (next === scene) return;
+      const fade = scene === null ? 0.01 : SCENE_FADE;
+      scene = next;
+      const now = context.currentTime;
+      spaceBus.gain.setTargetAtTime(next === "space" ? 1 : 0, now, fade);
+      gardenBus.gain.setTargetAtTime(next === "garden" ? 1 : 0, now, fade);
+      clearInterval(scheduler);
+      clearTimeout(natureStopTimer);
+
+      if (next === "garden") {
+        if (!nature) nature = createNature(context, gardenBus, echo);
+        nature.start(now);
+        nature.scheduleUntil(now + LOOKAHEAD);
+        scheduler = setInterval(() => nature.scheduleUntil(context.currentTime + LOOKAHEAD), 1000);
+      } else if (nature) {
+        // Let the queued waves fade out with the bus, then cancel the rest
+        natureStopTimer = setTimeout(() => nature.stop(), SCENE_FADE * 5000);
+      }
+    },
+
+    get scene() {
+      return scene;
+    },
+
+    // How loud the garden is right now (0–1), for the oscilloscope
+    gardenLevel() {
+      gardenMeter.getFloatTimeDomainData(meterData);
+      let sum = 0;
+      for (const v of meterData) sum += v * v;
+      return Math.min(1, Math.sqrt(sum / meterData.length) * 7);
+    },
+
     close() {
       clearTimeout(suspendTimer);
+      clearInterval(scheduler);
+      clearTimeout(natureStopTimer);
       context.close();
     },
   };

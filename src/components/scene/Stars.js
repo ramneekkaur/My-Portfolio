@@ -44,7 +44,7 @@ function createStars(count) {
       color.set(palette.nebula); // subtle violet
     }
 
-    const intensity = random() * 0.6 + 0.15; // dimmer than the hero, so it stays the focus
+    const intensity = random() * 0.6 + 0.2; // dimmer than the hero, so it stays the focus
 
     colors[i * 3] = color.r * intensity;
     colors[i * 3 + 1] = color.g * intensity;
@@ -79,7 +79,7 @@ export default function Stars({ count, reduceMotion }) {
           transparent
           map={texture}
           vertexColors
-          size={0.3}
+          size={0.35}
           sizeAttenuation
           depthWrite={false}
           blending={THREE.AdditiveBlending}

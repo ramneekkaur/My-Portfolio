@@ -2,20 +2,46 @@
 
 import { Suspense, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
+import {
+  Bloom,
+  ChromaticAberration,
+  ColorDepth,
+  EffectComposer,
+  Noise,
+  Pixelation,
+  Vignette,
+} from "@react-three/postprocessing";
+import { Vector2 } from "three";
 import Stars from "./Stars";
 import SeedBloom from "./SeedBloom";
 import { palette } from "@/lib/palette";
 import { scrollState } from "@/lib/scrollState";
+import { warpAmount } from "@/lib/warpState";
 import { useMediaQuery, usePrefersReducedMotion } from "@/lib/useMediaQuery";
 
 const CAMERA_START_Z = 20;
 const CAMERA_TRAVEL = 4; // how far the camera drifts forward over the whole page
+const CAMERA_FOV = 75;
+const WARP_DIVE = 22; // how far the camera dives forward when warping into a star
+const WARP_FOV = 110; // the view widens so the stars rush past
 
-// Gently moves the camera deeper into space as the visitor scrolls.
+// Old-monitor look: a fine low-resolution grain, a slightly reduced palette
+// and colour fringing at the edges — subtle, so glows stay cinematic.
+const PIXEL_SIZE = { desktop: 2, mobile: 2 };
+const COLOR_BITS = 7;
+const FRINGE_OFFSET = new Vector2(0.0015, 0.001);
+
+// Gently moves the camera deeper into space as the visitor scrolls, and
+// dives through the stars when a project is opened (lib/warpState.js).
 function CameraRig() {
   useFrame(({ camera }) => {
-    camera.position.z = CAMERA_START_Z - scrollState.progress * CAMERA_TRAVEL;
+    const warp = warpAmount(performance.now());
+    camera.position.z = CAMERA_START_Z - scrollState.progress * CAMERA_TRAVEL - warp * WARP_DIVE;
+    const fov = CAMERA_FOV + warp * (WARP_FOV - CAMERA_FOV);
+    if (camera.fov !== fov) {
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+    }
   });
 
   return null;
@@ -49,7 +75,7 @@ export default function CosmicScene() {
     <div className="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ position: [0, 0, CAMERA_START_Z], fov: 75 }}
+        camera={{ position: [0, 0, CAMERA_START_Z], fov: CAMERA_FOV }}
         // Reduced motion: only redraw when the visitor scrolls.
         frameloop={reduceMotion ? "demand" : "always"}
         gl={{ alpha: false, antialias: false, powerPreference: "high-performance" }}
@@ -63,16 +89,24 @@ export default function CosmicScene() {
           <Stars count={isMobile ? 1500 : 3000} reduceMotion={reduceMotion} />
         </Suspense>
 
-        {/* Film look: light blooms softly off the seed, flower and brightest
-            stars, and the frame darkens towards its edges. */}
+        {/* The scene as seen on an old CRT monitor: phosphor bloom, chunky
+            pixels, a reduced colour palette, colour fringing towards the edges,
+            faint signal static and a dark tube vignette. */}
         <EffectComposer multisampling={0}>
           <Bloom mipmapBlur intensity={1.1} luminanceThreshold={0.3} luminanceSmoothing={0.35} />
-          <Vignette offset={0.28} darkness={0.7} />
+          <Pixelation granularity={isMobile ? PIXEL_SIZE.mobile : PIXEL_SIZE.desktop} />
+          <ColorDepth bits={COLOR_BITS} />
+          <ChromaticAberration offset={FRINGE_OFFSET} radialModulation modulationOffset={0.3} />
+          <Noise premultiply opacity={0.5} />
+          <Vignette offset={0.32} darkness={0.85} />
         </EffectComposer>
       </Canvas>
 
-      {/* Faint nebula glow, screened over the scene */}
+      {/* Banded nebula glow, a phosphor tint and the curved glass of the
+          tube — all under the page content, so text stays crisp. */}
       <div className="cosmic-glow absolute inset-0" />
+      <div className="crt-tint absolute inset-0" />
+      <div className="crt-screen absolute inset-0" />
     </div>
   );
 }

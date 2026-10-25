@@ -51,8 +51,9 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={introStarted ? { opacity: 1 } : undefined}
             transition={{ duration: 2, delay: 1.8 }}
-            className="mb-6 text-xs md:text-sm uppercase tracking-[0.5em] text-electric"
+            className="mb-6 font-display text-lg font-bold uppercase tracking-[0.35em] text-phosphor glow-text md:text-2xl"
           >
+            <span aria-hidden="true" className="opacity-60">&gt; </span>
             {profile.name}
           </motion.p>
 
@@ -60,7 +61,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={introStarted ? { opacity: 1, y: 0 } : undefined}
             transition={{ duration: 2.2, delay: 2.2 }}
-            className="text-4xl md:text-7xl font-bold glow-text max-w-5xl"
+            className="font-display text-3xl font-bold uppercase leading-tight tracking-wide md:text-5xl glow-text max-w-5xl"
           >
             Cultivating Intelligence Across the Cosmos
           </motion.h1>
@@ -69,7 +70,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={introStarted ? { opacity: 1, y: 0 } : undefined}
             transition={{ duration: 2, delay: 2.9 }}
-            className="text-lg text-gray-400 max-w-xl mt-6"
+            className="text-sm md:text-base text-gray-400 max-w-xl mt-6"
           >
             {profile.role} · {profile.studies}
           </motion.p>
@@ -78,9 +79,11 @@ export default function Hero() {
         {/* Bloom: appears once the flower has formed */}
         <motion.p
           style={{ opacity: taglineOpacity }}
-          className="absolute bottom-[12vh] inset-x-6 text-2xl md:text-4xl font-light tracking-wide glow-text"
+          className="absolute bottom-[12vh] inset-x-6 font-display text-xl uppercase tracking-[0.2em] md:text-3xl glow-text"
         >
+          <span aria-hidden="true" className="text-phosphor-dim">&gt; </span>
           Where Intelligence Blooms
+          <span aria-hidden="true" className="cursor-block" />
         </motion.p>
 
         {/* Scroll hint */}
@@ -92,11 +95,11 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={introStarted ? { opacity: 1 } : undefined}
             transition={{ duration: 1.5, delay: 4 }}
-            className="text-[0.65rem] uppercase tracking-[0.4em] text-gray-500"
+            className="text-[0.65rem] uppercase tracking-[0.35em] text-phosphor/80"
           >
-            Scroll to grow
+            [ Scroll to grow ]<span aria-hidden="true" className="cursor-block" />
           </motion.span>
-          <span className="scroll-hint-line block h-10 w-px bg-gradient-to-b from-electric/70 to-transparent" />
+          <span className="scroll-hint-line block h-10 w-px bg-gradient-to-b from-phosphor/70 to-transparent" />
         </motion.div>
       </div>
     </section>

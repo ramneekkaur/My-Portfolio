@@ -35,14 +35,6 @@ const ICONS = {
       <path d="M5 19 C9 14 13 10 16 8" strokeOpacity="0.6" />
     </>
   ),
-  // A page with a folded corner and a small star — the star chart
-  document: (
-    <>
-      <path d="M6 2.5 H14 L19 7.5 V21.5 H6 Z" />
-      <path d="M14 2.5 V7.5 H19" strokeOpacity="0.6" />
-      <path d="M12.5 11 C12.8 13.2 13.6 14 15.8 14.3 C13.6 14.6 12.8 15.4 12.5 17.6 C12.2 15.4 11.4 14.6 9.2 14.3 C11.4 14 12.2 13.2 12.5 11 Z" fill="currentColor" stroke="none" />
-    </>
-  ),
   // A signal broadcasting outwards
   signal: (
     <>

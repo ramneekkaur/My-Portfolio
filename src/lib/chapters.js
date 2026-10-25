@@ -17,7 +17,6 @@ export const CHAPTERS = [
     realm: "tech",
   },
   { id: "nature", label: "Beyond the Code", title: "Nature & Vision", icon: "leaf", realm: "nature" },
-  { id: "resume", label: "Résumé", title: "Star Chart", icon: "document", realm: "space" },
   { id: "contact", label: "Contact", title: "Send a Signal", icon: "signal", realm: "space" },
 ].map((chapter, i) => ({ ...chapter, number: String(i).padStart(2, "0") }));
 

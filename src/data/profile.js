@@ -6,46 +6,51 @@ export const profile = {
   role: "Machine learning & AI-driven systems",
   studies: "MSc Computer Science, Universität Paderborn",
   location: "Paderborn, Germany",
-  email: "kaurramneek2099@gmail.com",
+  emails: [
+    { label: "Personal", address: "kaurramneek2099@gmail.com" },
+    { label: "University", address: "rk2099@campus.uni-paderborn.de" },
+  ],
   links: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/ramneek-kaur-31734a189/" },
     { label: "GitHub", href: "https://github.com/ramneekkaur" },
   ],
-  // The downloadable CV (files in public/resume/). To update it, replace the
-  // PDF and re-render the preview of page 1:
-  //   qlmanage -t -s 1200 -o /tmp public/resume/Ramneek_Kaur_Resume.pdf
-  //   sips -Z 1020 -s format jpeg -s formatOptions 60 /tmp/Ramneek_Kaur_Resume.pdf.png --out public/resume/resume-preview.jpg
+  // The downloadable CV. To update it, replace the PDF in public/resume/
+  // and change `updated` (its file size is read automatically).
   resume: {
     href: "/resume/Ramneek_Kaur_Resume.pdf",
     fileName: "Ramneek_Kaur_Resume.pdf",
-    preview: { src: "/resume/resume-preview.jpg", width: 721, height: 1020 },
     pages: 2,
     updated: "September 2026",
   },
 };
 
-// Neural Garden: each skill family is a "species".
+// Neural Garden: each skill family is a "species", with its specimen plate
+// (components/SkillSpecimen.js): arbor, filix, radix or crystallus.
 export const skills = [
   {
     title: "Machine Learning",
+    specimen: "arbor",
     description:
       "Predictive models, graph neural networks and explainable AI — finding the patterns hidden inside data.",
     tags: ["Python", "Explainable AI", "Graph neural networks", "OpenCV"],
   },
   {
     title: "LLM & RAG Systems",
+    specimen: "filix",
     description:
       "Retrieval pipelines, reranking and evaluation that keep language models grounded in real sources.",
     tags: ["LangChain", "FAISS", "Hugging Face", "RAG", "Topic modelling"],
   },
   {
     title: "Data Engineering",
+    specimen: "radix",
     description:
       "ETL and big-data workflows that turn large business datasets into decisions.",
     tags: ["SQL", "ETL", "Big Data", "MongoDB", "AWS"],
   },
   {
     title: "Software Engineering",
+    specimen: "crystallus",
     description:
       "Building dependable systems end to end, from algorithms to APIs and interfaces.",
     tags: ["Python", "Java", "C / C++", "FastAPI", "Git"],
@@ -193,7 +198,7 @@ export const projects = [
 
 // Research Interests & Philosophy: the questions growing beneath the work.
 // Each interest is a glowing root tip; `from` says where it took root.
-export const interests = [
+export const researchInterests = [
   {
     title: "Quantum computing",
     description: "Computation that is probabilistic, layered and deeply interconnected.",
@@ -219,8 +224,63 @@ export const languages = [
   { name: "Punjabi", level: "Mother tongue" },
 ];
 
-// Nature & Vision photos (gardening, macro flowers, textures).
-// Put the image files in public/nature/ and list them here, e.g.
-// { src: "/nature/basil.jpg", alt: "Basil leaves after rain", width: 1200, height: 1600, caption: "Optional caption" }
-// width/height are the image's real pixel size (used for the layout).
-export const naturePhotos = [];
+// The Garden World (/garden): the interests that grow beyond the code, each a
+// glowing blossom on the planet. `lat`/`lon` place it on the globe (degrees).
+// Photos for each one are posted as "moments" at /garden/upload.
+// Stories marked "edit me" are placeholders — rewrite them in your own words.
+export const interests = [
+  {
+    id: "nature",
+    title: "Nature",
+    summary: "Gardening, flowers, trekking — and this beautiful world.",
+    story:
+      "I love gardening, flowers and trekking, and simply seeing this beautiful world — a quiet trail, a flower opening, the light changing over a valley. Nature reminds me that complex systems need patience, attention, and care. Intelligence, like nature, grows through structure and time.",
+    lat: 28,
+    lon: -18,
+  },
+  {
+    id: "travelling",
+    title: "Travelling",
+    summary: "New places, new cultures, and the roads between them.",
+    story:
+      "Travelling shows me how differently the world can look — new places, new cultures, new ways of thinking. Every journey widens the map a little, and I always come home with new ideas. (edit me)",
+    lat: -46,
+    lon: -52,
+  },
+  {
+    id: "technology",
+    title: "Technology & AI",
+    summary: "Intelligent systems as living networks.",
+    story:
+      "I explore intelligent systems as living networks — where algorithms, data, and curiosity grow like roots beneath the surface.",
+    lat: -14,
+    lon: 52,
+  },
+  {
+    id: "space",
+    title: "Space & Astronomy",
+    summary: "An infinite canvas of possibility.",
+    story:
+      "The night sky is where my curiosity started: an infinite canvas that makes every question feel worth asking. (edit me)",
+    lat: 46,
+    lon: 118,
+  },
+  {
+    id: "photography",
+    title: "Photography",
+    summary: "Macro flowers, garden light and quiet details.",
+    story:
+      "I photograph the small worlds I notice — petals up close, light through leaves, the quiet details of the garden. (edit me)",
+    lat: -22,
+    lon: -118,
+  },
+  {
+    id: "science-fiction",
+    title: "Science Fiction",
+    summary: "A language for possible futures.",
+    story:
+      "Space and science fiction give me a language for possibility — a way to imagine futures where computation, life, and curiosity expand together.",
+    lat: 8,
+    lon: 178,
+  },
+];

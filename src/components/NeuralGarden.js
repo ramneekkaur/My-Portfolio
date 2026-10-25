@@ -7,7 +7,7 @@ import { mulberry32 } from "@/lib/random";
 import { usePrefersReducedMotion } from "@/lib/useMediaQuery";
 
 const FIRE_STEP = 0.07; // seconds between skills lighting up, like neurons firing
-const PULSE_EVERY_MS = 2600; // ambient signal along a random connection
+const PULSE_EVERY_MS = 4500; // an occasional quiet signal along a random connection
 
 // Every distinct skill, in order of appearance, with the species it feeds.
 function collectSkillNodes(skills) {
@@ -87,8 +87,8 @@ function rootlets(card, index) {
   return [-1, 0, 1].map((offset) => {
     const x = card.x + offset * 22 + (random() - 0.5) * 12;
     const y = card.bottom;
-    const drift = (random() - 0.5) * 70;
-    const length = 45 + random() * 45;
+    const drift = (random() - 0.5) * 90;
+    const length = 75 + random() * 70;
     return `M${x} ${y} C${x} ${y + length * 0.5} ${x + drift} ${y + length * 0.6} ${x + drift * 1.2} ${y + length}`;
   });
 }
@@ -145,6 +145,13 @@ export default function NeuralGarden({ skills }) {
     activeSkill === skill || (activeCard !== null && skillNodes[skill].species.includes(activeCard));
   const connectionLit = (connection) =>
     activeCard === connection.card || activeSkill === connection.skill;
+  // The ambient signals pause while a card or skill is hovered, so only its
+  // own connections carry signals
+  const idle = activeCard === null && activeSkill === null;
+  const hover = (setActive, value) => {
+    setPulse(null); // drop any signal in flight, so none finishes or replays mid-hover
+    setActive(value);
+  };
 
   return (
     <div ref={containerRef} className="relative pt-16">
@@ -168,9 +175,11 @@ export default function NeuralGarden({ skills }) {
                 animate={inView ? { pathLength: 1 } : undefined}
                 transition={{ duration: 1.2, delay: fireDuration * 0.6 + connection.skill * 0.05, ease: "easeInOut" }}
               />
-              {(connectionLit(connection) || pulse?.index === i) && (
+              {(connectionLit(connection) || (idle && pulse?.index === i)) && (
                 <path
                   key={connectionLit(connection) ? "lit" : pulse.key}
+                  data-card={connection.card}
+                  data-skill={connection.skill}
                   d={connection.d}
                   pathLength="1"
                   fill="none"
@@ -214,8 +223,8 @@ export default function NeuralGarden({ skills }) {
                     key={`r-${i}-${k}`}
                     d={d}
                     fill="none"
-                    strokeWidth={0.75}
-                    className="stroke-bloom/25"
+                    strokeWidth={0.9}
+                    className="garden-rootlet stroke-bloom/50"
                     initial={{ pathLength: 0 }}
                     animate={inView ? { pathLength: 1 } : undefined}
                     transition={{ duration: 2.4, delay: fireDuration + 1.6 + k * 0.2 }}
@@ -256,8 +265,8 @@ export default function NeuralGarden({ skills }) {
             data-lit={skillLit(i)}
             data-cursor="interactive"
             style={{ "--delay": `${i * FIRE_STEP}s` }}
-            onPointerEnter={() => setActiveSkill(i)}
-            onPointerLeave={() => setActiveSkill((current) => (current === i ? null : current))}
+            onPointerEnter={() => hover(setActiveSkill, i)}
+            onPointerLeave={() => hover(setActiveSkill, (current) => (current === i ? null : current))}
             className="skill-node"
           >
             <span aria-hidden="true" className="skill-node-dot" />
@@ -282,10 +291,11 @@ export default function NeuralGarden({ skills }) {
             index={i}
             title={skill.title}
             description={skill.description}
+            specimen={skill.specimen}
             tags={skill.tags}
             active={cardLit(i)}
-            onActivate={() => setActiveCard(i)}
-            onDeactivate={() => setActiveCard((current) => (current === i ? null : current))}
+            onActivate={() => hover(setActiveCard, i)}
+            onDeactivate={() => hover(setActiveCard, (current) => (current === i ? null : current))}
           />
         ))}
       </motion.div>
