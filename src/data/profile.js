@@ -6,6 +6,24 @@ export const profile = {
   role: "Machine learning & AI-driven systems",
   studies: "MSc Computer Science, Universität Paderborn",
   location: "Paderborn, Germany",
+  // About (Crew Profile): put your photo at public/profile/ramneek.jpg — a
+  // portrait, face roughly centred, at least 800px wide. Until it's there,
+  // the star portrait shows your initials.
+  //   crop     the 4:5 part of the photo shown, as fractions of the photo
+  //            (x, y = its top-left corner; width = its share of the width)
+  //   subject  where your face is inside that crop (0–1), so the stars gather
+  //            into your head and shoulders rather than the background
+  //   place    shown in the frame's caption
+  photo: {
+    src: "/profile/ramneek.jpg",
+    alt: "Portrait of Ramneek Kaur on a canal bridge in Amsterdam at dusk",
+    crop: { x: 0.2, y: 0.13, width: 0.6 },
+    subject: { x: 0.49, y: 0.37 },
+    place: "Amsterdam, NL",
+  },
+  crewId: "RK-2099",
+  status: "open to collaborations",
+  bio: "I'm an MSc Computer Science student at Universität Paderborn, building machine-learning and LLM systems — from retrieval pipelines to explainable models. I love work where careful engineering meets curiosity, and ideas grow into something people can actually use.",
   emails: [
     { label: "Personal", address: "kaurramneek2099@gmail.com" },
     { label: "University", address: "rk2099@campus.uni-paderborn.de" },
@@ -158,6 +176,137 @@ export const timeline = [
 // Constellations of Work: each project is a star.
 // hue: "electric" | "nebula" | "bloom" — the colour of its planet.
 // links (optional): [{ label: "GitHub", href: "https://…" }]
+// Studies (Learning Orbit): what you've studied and are studying now at
+// Universität Paderborn. Each entry becomes a planet:
+//   type     "course" | "seminar" | "project"  → which orbit it circles on
+//   status   "current" (studying now: a pulsing halo) | "completed"
+//   writeup  2–4 sentences on what you worked on or learned
+//   topics   optional short chips
+//   short    optional shorter name for the planet's label in the orbit
+//   subtitle optional line under the title (team, supervisor, paper…)
+//   phases   optional [{ title, status, text }] for multi-part work
+//   progress optional { done, total, unit } → a progress bar ("1 of 2 semesters")
+//   stats    optional [{ value, label }] → up to three highlight tiles
+export const studies = [
+  {
+    type: "project",
+    title: "How to Train Your LLM 2 (HTYLLM2)",
+    short: "HTYLLM2",
+    status: "current",
+    subtitle: "Team of 9 · DICE group, Heinz Nixdorf Institut · supervised by Prof. Dr. Axel Ngonga",
+    writeup:
+      "A two-semester research project in a team of nine. Most of the world's ~7,000 languages are barely served by large language models, and adding more languages to one model can even make it worse. We're studying how to close that gap efficiently.",
+    phases: [
+      {
+        title: "Phase 1 · One model, 198 languages",
+        status: "completed",
+        text: "Can one frozen Llama-3.2-1B be adapted cheaply to serve 198 languages? We compared three adapter-based expert architectures on the HPLT corpus. I worked on Hybrid Cluster Experts: routing each text by its Glot500 embedding instead of a language ID, with one LoRA expert per semantic cluster (50 experts for 198 languages). It gave the largest gain of the three approaches: 49.7% lower perplexity when deployed and 56% on low-resource languages, with no catastrophic forgetting.",
+      },
+      {
+        title: "Phase 2 · Scaling laws across architectures",
+        status: "current",
+        text: "Now we're studying how multilingual language models scale across five architectures, from dense Transformers to Mamba, on a compute budget of 15,000 H100 GPU hours.",
+      },
+    ],
+    progress: { done: 1, total: 2, unit: "semesters" },
+    stats: [
+      { value: "198", label: "languages" },
+      { value: "49.7%", label: "lower perplexity" },
+      { value: "15k", label: "H100 hours" },
+    ],
+    topics: ["LLMs", "LoRA", "Multilingual NLP", "Scaling laws", "PyTorch"],
+  },
+  {
+    type: "seminar",
+    title: "Seminar: Debate-to-Write",
+    short: "Debate-to-Write",
+    status: "completed",
+    subtitle: "Individual research seminar · critical review of Hu et al., COLING 2025",
+    writeup:
+      "An independent study and critical review of Debate-to-Write, a persona-driven multi-agent framework in which LLM agents with distinct personas debate a topic before writing an argumentative essay, to make the output more diverse. I reconstructed its three stages (persona assignment, debate-driven planning and argument writing), its Perspective Diversity metric and its evaluation, then examined its weaknesses: LLM judges grading their own model family, a small human study, personas as role-play rather than real reasoning diversity, and unreported cost. I proposed extensions such as knowledge-grounded debate and persona bias audits, and presented the work in a written report and a talk.",
+    topics: ["Multi-agent LLMs", "Persona prompting", "Argument generation", "LLM evaluation"],
+  },
+  {
+    type: "course",
+    title: "Machine Learning 1",
+    status: "current",
+    writeup:
+      "The foundations of machine learning: how models learn from data and how to judge them fairly. Working through supervised learning — linear and logistic regression, support vector machines and neural networks — together with regularisation, model selection and evaluation.",
+    topics: ["Supervised learning", "Neural networks", "Model evaluation"],
+  },
+  {
+    type: "course",
+    title: "Introduction to Quantum Computation",
+    short: "Quantum Computation",
+    status: "current",
+    writeup:
+      "Quantum computing from a computer-science point of view. Learning the postulates of quantum mechanics, how entanglement works as a resource, and how to design and analyse fundamental quantum algorithms — along with quantum error correction and the basics of quantum information theory, such as entropy.",
+    topics: ["Qubits", "Entanglement", "Quantum algorithms", "Error correction"],
+  },
+  {
+    type: "course",
+    title: "Post-Quantum Cryptography",
+    status: "current",
+    writeup:
+      "Shor's algorithm would break RSA, ElGamal and DSA on a large enough quantum computer, so this course looks at what replaces them. Studying codes, lattices and discretised Gaussian distributions, and the lattice- and code-based encryption, signatures and zero-knowledge proofs built on them — including how to prove their security.",
+    topics: ["Lattices", "Code-based crypto", "Signatures", "Zero-knowledge"],
+  },
+  {
+    type: "course",
+    title: "Explainable Artificial Intelligence",
+    short: "Explainable AI",
+    status: "completed",
+    writeup:
+      "Why a model's predictions need explaining, and how to do it. I worked with inherently interpretable models (linear models, decision trees and rules), global methods such as partial dependence plots and permutation feature importance, local ones such as LIME, Anchors, SHAP and counterfactuals, and methods made for neural networks. I implemented simple explainers from scratch and, in the mini-project, explained a Fast R-GCN on the MUTAG dataset with GNNExplainer.",
+    topics: ["SHAP", "LIME", "Counterfactuals", "GNNExplainer"],
+  },
+  {
+    type: "course",
+    title: "Multi-Objective Optimisation",
+    status: "completed",
+    writeup:
+      "Real problems rarely have one goal — the shortest route is often not the cheapest. I learned to find sets of optimal compromises (Pareto-optimal solutions): exact algorithms for multi-criteria minimum spanning tree and shortest path problems and their limits, nature-inspired evolutionary heuristics, how to measure and visualise the quality of the results, and what changes with more than three objectives.",
+    topics: ["Pareto optimality", "Evolutionary algorithms", "Many-objective"],
+  },
+  {
+    type: "course",
+    title: "Data-Driven Innovation",
+    status: "completed",
+    writeup:
+      "How data changes the way companies innovate. I studied the fundamentals of innovation management and of data in organisations, data-driven offerings — smart products and services, digital platforms, data spaces and digital business models — and data-infused innovation processes, then applied the methods in the tutorials to find, shape and test ideas towards a market.",
+    topics: ["Innovation management", "Business models", "Digital platforms"],
+  },
+  {
+    type: "course",
+    title: "Machine Learning for Biometrics",
+    short: "ML for Biometrics",
+    status: "completed",
+    writeup:
+      "How machine learning recognises people by their face, iris or fingerprint, and what makes biometric systems trustworthy. Alongside evaluating biometric systems and training recognition models on facial data in the exercises, I studied fairness and bias, privacy and soft biometrics, explainability and confidence, sample quality, and detecting presentation attacks.",
+    topics: ["Face recognition", "Fairness", "Attack detection", "Privacy"],
+  },
+  {
+    type: "course",
+    title: "Data Science for Software Engineering",
+    short: "Data Science for SE",
+    status: "completed",
+    writeup:
+      "Applying data science to the data software teams produce — code in version control, issues, mailing lists and forums. I used clustering of source code, NLP pipelines, topic modelling, word embeddings, information retrieval and supervised learning, and in group assignments analysed open-source systems for architecture and maintenance tasks, reporting and presenting the results scientifically.",
+    topics: ["Topic modelling", "NLP", "Software repositories", "Statistics"],
+  },
+  {
+    type: "course",
+    title: "Unsupervised Learning and Evolutionary Optimisation Using R",
+    short: "Unsupervised Learning (R)",
+    status: "completed",
+    writeup:
+      "Finding structure in data without labels, implemented in R. I worked on data pre-processing and data quality, clustering (including stream clustering) and dimensionality reduction, and on the principles of single- and multi-objective evolutionary optimisation — applying them in individual and group work and assessing the quality of the results.",
+    topics: ["R", "Clustering", "Dimensionality reduction", "Evolutionary optimisation"],
+  },
+];
+
+// `github`: the project's repository (a "GitHub" link under the project and
+// in its project file). Leave it out for projects without a public repo.
 export const projects = [
   {
     id: "rag-pipeline",
@@ -182,6 +331,7 @@ export const projects = [
     description:
       "Training and interpreting a Relational Graph Convolutional Network on the MUTAG RDF dataset using Fast RGCN, with GNN Explainer revealing which parts of the graph drive its predictions.",
     tech: ["Python", "Machine Learning", "Graph neural networks", "Explainable AI"],
+    github: "https://github.com/ramneekkaur/XAI_Mini_Project_SS2025",
   },
   {
     id: "cosmic-garden",
@@ -193,6 +343,7 @@ export const projects = [
     description:
       "A cinematic, scroll-driven portfolio: a particle seed grows into a neural network and blooms into a flower, roots grow beneath the content, and a generative soundscape follows the bloom.",
     tech: ["Next.js", "React Three Fiber", "GLSL shaders", "Framer Motion", "Web Audio"],
+    github: "https://github.com/ramneekkaur/My-Portfolio",
   },
 ];
 

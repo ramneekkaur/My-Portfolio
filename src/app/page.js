@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import CosmicScene from "@/components/scene/CosmicScene";
 import Hero from "@/components/Hero";
@@ -17,10 +19,15 @@ import SignalChannels from "@/components/SignalChannels";
 import NatureBackdrop from "@/components/NatureBackdrop";
 import GardenPortal from "@/components/GardenPortal";
 import InterestRoots from "@/components/InterestRoots";
+import CrewProfile from "@/components/CrewProfile";
+import LearningOrbit from "@/components/LearningOrbit";
 import { chapter } from "@/lib/chapters";
-import { profile, skills, timeline, projects, researchInterests, languages } from "@/data/profile";
+import { profile, skills, timeline, studies, projects, researchInterests, languages } from "@/data/profile";
 
 export default function Home() {
+  // The portrait uses the photo once it's in public/; until then, the initials
+  const photo = existsSync(path.join(process.cwd(), "public", profile.photo.src)) ? profile.photo : null;
+
   return (
     <main className="text-white overflow-x-clip">
       <CosmicScene />
@@ -31,6 +38,17 @@ export default function Home() {
       {/* Hero – Cosmic Seed */}
       <Letterbox />
       <Hero />
+
+      {/* About – the crew profile, with a portrait made of stars */}
+      <section id="about" className="px-6 py-28">
+        <div className="w-full max-w-5xl mx-auto">
+          <SectionHeader chapter={chapter("about")}>
+            Identity confirmed. The person behind the signals — where the seed
+            began, and where it&apos;s growing.
+          </SectionHeader>
+          <CrewProfile profile={profile} photo={photo} />
+        </div>
+      </section>
 
       {/* Neural Garden */}
       <section id="neural-garden" data-realm="tech" className="min-h-screen px-6 py-28 flex items-center">
@@ -54,6 +72,19 @@ export default function Home() {
           </SectionHeader>
 
           <GrowthRings entries={timeline} />
+        </div>
+      </section>
+
+      {/* Studies – courses, seminars and projects at Universität Paderborn */}
+      <section id="studies" data-realm="tech" className="px-6 py-28">
+        <div className="w-full max-w-5xl mx-auto">
+          <SectionHeader chapter={chapter("studies")}>
+            MSc Computer Science · Universität Paderborn. Every course, seminar
+            and project is a world in orbit — select one to see what I worked
+            on and learned there.
+          </SectionHeader>
+
+          <LearningOrbit modules={studies} />
         </div>
       </section>
 

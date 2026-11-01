@@ -12,6 +12,7 @@
   --color-blossom: #e8a3bd;  /* dusty-rose blossoms of the Garden World — never neon */
   --color-blossom-light: #f8dbe6;
   --color-leaf: #4f9a6f;     /* living branches */
+  --color-ember: #f2b968;    /* muted amber: what's in progress right now */
 
   /* Retro mission-control: ice-blue phosphor text, like the blue-phosphor
      radar and mission-control screens of the 1970s–80s */
@@ -812,6 +813,10 @@ html {
   --hue: var(--color-bloom);
 }
 
+.project-planet[data-hue="ember"] {
+  --hue: var(--color-ember);
+}
+
 .project-planet {
   --hue: var(--color-electric);
   position: absolute;
@@ -961,6 +966,420 @@ html {
 }
 
 /* A single signal along a connection (ambient firing) */
+/* Studies: the learning orbit */
+.orbit-path {
+  --hue: var(--color-electric);
+  fill: none;
+  stroke: color-mix(in oklab, var(--hue) 50%, transparent);
+  stroke-width: 1; /* screen pixels (non-scaling) */
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 3 5;
+  filter: drop-shadow(0 0 3px color-mix(in oklab, var(--hue) 45%, transparent));
+}
+
+.orbit-path[data-hue="nebula"] {
+  --hue: var(--color-nebula);
+}
+
+.orbit-path[data-hue="bloom"] {
+  --hue: var(--color-bloom);
+}
+
+.orbit-filter {
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 767px) {
+  .orbit-filter {
+    gap: 0.45rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* A short dash in its orbit's colour, on the filter chips */
+.orbit-swatch {
+  --hue: var(--color-electric);
+  display: inline-block;
+  width: 0.9rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--hue);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--hue) 60%, transparent);
+}
+
+.orbit-swatch[data-hue="nebula"] {
+  --hue: var(--color-nebula);
+}
+
+.orbit-swatch[data-hue="bloom"] {
+  --hue: var(--color-bloom);
+}
+
+/* Project progress, e.g. 1 of 2 semesters */
+.study-progress {
+  height: 3px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, white 8%, transparent);
+  overflow: hidden;
+}
+
+.study-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-ember);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--color-ember) 70%, transparent);
+}
+
+.study-stat {
+  border: 1px solid color-mix(in oklab, white 10%, transparent);
+  border-radius: 2px;
+  padding: 0.6rem 0.65rem;
+}
+
+.orbit-ring,
+.orbit-planet {
+  transition: opacity 0.5s ease;
+}
+
+.orbit-ring[data-dim="true"],
+.orbit-planet[data-dim="true"] {
+  opacity: 0.18;
+}
+
+.orbit-core {
+  width: 3.25rem;
+  height: 3.25rem;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+}
+
+.orbit-core-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #f4f9ff 0%, color-mix(in oklab, var(--color-phosphor) 70%, transparent) 28%, color-mix(in oklab, var(--color-phosphor) 14%, transparent) 60%, transparent 72%);
+  box-shadow: 0 0 60px 6px color-mix(in oklab, var(--color-phosphor) 22%, transparent);
+  animation: nodeBreathe 5s ease-in-out infinite;
+}
+
+.orbit-core-label {
+  position: relative;
+  margin-top: 4.1rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.35em;
+  color: var(--color-phosphor);
+}
+
+.orbit-planet {
+  --depth: 1;
+  width: 2.1rem;
+  height: 2.1rem;
+  translate: -50% -50%;
+  scale: calc(0.72 + var(--depth) * 0.38);
+  filter: brightness(calc(0.65 + var(--depth) * 0.45));
+  border-radius: 9999px;
+  outline: none;
+}
+
+@media (max-width: 767px) {
+  .orbit-planet {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+.orbit-planet[data-active="true"] .project-planet {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--hue) 70%, transparent),
+    0 0 40px -4px color-mix(in oklab, var(--hue) 60%, transparent);
+}
+
+.orbit-planet:focus-visible {
+  outline: 1px solid var(--color-phosphor);
+  outline-offset: 4px;
+}
+
+/* Studying now: a slowly pulsing halo */
+.orbit-halo {
+  --hue: var(--color-electric);
+  position: absolute;
+  inset: -45%;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--hue) 60%, transparent);
+  animation: orbitHalo 3.2s ease-out infinite;
+  pointer-events: none;
+}
+
+.orbit-halo[data-hue="nebula"] {
+  --hue: var(--color-nebula);
+}
+
+.orbit-halo[data-hue="bloom"] {
+  --hue: var(--color-bloom);
+}
+
+.orbit-halo[data-hue="ember"] {
+  --hue: var(--color-ember);
+}
+
+@keyframes orbitHalo {
+  from {
+    transform: scale(0.55);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+.orbit-planet-label {
+  --hue: var(--color-electric);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.35rem);
+  translate: -50% 0;
+  width: max-content;
+  max-width: 9rem;
+  font-size: 0.58rem;
+  line-height: 1.35;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--hue) 35%, var(--color-gray-300));
+  opacity: 0.8;
+  transition:
+    opacity 0.3s ease,
+    color 0.3s ease;
+  text-shadow: 0 0 6px var(--color-space);
+}
+
+.orbit-planet-label[data-hue="ember"] {
+  --hue: var(--color-ember);
+}
+
+.orbit-planet-label[data-state="lit"] {
+  opacity: 1;
+  color: var(--color-gray-100);
+  text-shadow:
+    0 0 6px var(--color-space),
+    0 0 12px color-mix(in oklab, var(--hue) 55%, transparent);
+}
+
+.orbit-planet[data-side="below"] .orbit-planet-label {
+  top: calc(100% + 0.35rem);
+  bottom: auto;
+}
+
+.orbit-planet[data-edge="left"] .orbit-planet-label {
+  left: 0;
+  translate: 0 0;
+  text-align: left;
+}
+
+.orbit-planet[data-edge="right"] .orbit-planet-label {
+  left: auto;
+  right: 0;
+  translate: 0 0;
+  text-align: right;
+}
+
+/* The selected or hovered planet's name sits above its neighbours (the loop
+   sets z-index inline, so this needs !important) */
+.orbit-planet[data-active="true"],
+.orbit-planet:hover {
+  z-index: 40 !important;
+}
+
+/* The seminar and the project each have a ring to themselves, so they read a
+   little stronger than the courses */
+.orbit-planet:is([data-kind="seminar"], [data-kind="project"]) {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.orbit-planet:is([data-kind="seminar"], [data-kind="project"]) .orbit-planet-label[data-state="rest"] {
+  opacity: 1;
+  color: color-mix(in oklab, var(--hue) 55%, var(--color-gray-200));
+}
+
+@media (max-width: 767px) {
+  .orbit-planet-label {
+    max-width: 5.5rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+  }
+
+  .orbit-planet:is([data-kind="seminar"], [data-kind="project"]) {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .orbit-planet:is([data-kind="seminar"], [data-kind="project"]) .orbit-planet-label {
+    font-size: 0.55rem;
+  }
+}
+
+.study-tag {
+  color: var(--color-electric);
+}
+
+.study-tag[data-hue="nebula"] {
+  color: var(--color-nebula);
+}
+
+.study-tag[data-hue="bloom"] {
+  color: var(--color-bloom);
+}
+
+.study-status-steady {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.4rem;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--color-electric) 75%, white);
+  vertical-align: 0.1em;
+}
+
+/* Studying now: an amber light that blinks like the crew status */
+.study-status-now {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.4rem;
+  border-radius: 9999px;
+  background: var(--color-ember);
+  box-shadow: 0 0 8px var(--color-ember);
+  vertical-align: 0.1em;
+  animation: crewBlink 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-halo,
+  .orbit-core-glow {
+    animation: none;
+  }
+}
+
+/* About: the crew ID frame, star portrait, scan line and status light */
+.crew-frame {
+  position: relative;
+}
+
+.crew-portrait {
+  background: radial-gradient(ellipse at 50% 40%, color-mix(in oklab, var(--color-phosphor) 7%, transparent), transparent 70%);
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+
+.crew-photo {
+  opacity: 0;
+  filter: brightness(1.15) contrast(1.06) saturate(1.05);
+  transition: opacity 2.4s ease;
+}
+
+.crew-portrait[data-revealed="true"] .crew-photo {
+  opacity: 1;
+}
+
+/* Star view (hover / tap): the photo dims so the constellation shows */
+.crew-starview-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--color-space);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.crew-portrait[data-revealed="true"][data-starview="true"] .crew-starview-shade {
+  opacity: 0.7;
+}
+
+/* Soft edges fading into the frame, so the person stands out from the street */
+.crew-photo-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 50% 40%, transparent 62%, color-mix(in oklab, var(--color-space) 25%, transparent) 100%);
+  opacity: 0;
+  transition: opacity 2.4s ease;
+}
+
+.crew-portrait[data-revealed="true"] .crew-photo-vignette {
+  opacity: 1;
+}
+
+.crew-scan {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3.5rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklab, var(--color-phosphor) 18%, transparent) 70%,
+    color-mix(in oklab, var(--color-phosphor) 75%, transparent) 98%,
+    transparent
+  );
+  animation: crewScan 1.5s cubic-bezier(0.45, 0, 0.25, 1) forwards;
+}
+
+@keyframes crewScan {
+  from {
+    top: -3.5rem;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  to {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.crew-status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.4rem;
+  border-radius: 9999px;
+  background: var(--color-phosphor);
+  box-shadow: 0 0 8px var(--color-phosphor);
+  vertical-align: 0.1em;
+  animation: crewBlink 2.4s ease-in-out infinite;
+}
+
+@keyframes crewBlink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crew-scan {
+    display: none;
+  }
+
+  .crew-status-dot,
+  .study-status-now {
+    animation: none;
+  }
+
+  .crew-photo,
+  .crew-photo-vignette,
+  .crew-starview-shade {
+    transition: none;
+  }
+}
+
 /* Rootlets trailing below the skill cards: a faint emerald glow */
 .garden-rootlet {
   filter: drop-shadow(0 0 3px color-mix(in oklab, var(--color-bloom) 45%, transparent));

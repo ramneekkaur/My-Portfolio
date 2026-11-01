@@ -30,6 +30,31 @@ function layoutConstellation(count) {
   return { stars, companions: [start, ...companions, end], lines };
 }
 
+function GitHubMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+    </svg>
+  );
+}
+
+// The repository link shown under a project in the constellation
+function GitHubLink({ project, className = "" }) {
+  if (!project.github) return null;
+  return (
+    <a
+      href={project.github}
+      target="_blank"
+      rel="noreferrer"
+      data-cursor="interactive"
+      aria-label={`${project.title} on GitHub`}
+      className={`project-github inline-flex items-center gap-1.5 text-[0.6rem] uppercase tracking-[0.25em] text-gray-400 transition-colors hover:text-phosphor focus-visible:text-phosphor ${className}`}
+    >
+      <GitHubMark /> GitHub <span aria-hidden="true">↗</span>
+    </a>
+  );
+}
+
 // The planet a star becomes. Shared (layoutId) between the star and the
 // detail panel, so opening a project zooms the planet into the panel.
 function Planet({ project, className = "", variant }) {
@@ -114,9 +139,14 @@ function ProjectDetail({ project, onClose }) {
               ))}
             </ul>
 
-            {project.links?.length > 0 && (
+            {(project.github || project.links?.length > 0) && (
               <div className="mt-8 flex flex-wrap gap-4">
-                {project.links.map((link) => (
+                {project.github && (
+                  <a href={project.github} target="_blank" rel="noreferrer" className="btn-terminal btn-terminal-primary inline-flex items-center gap-2">
+                    <GitHubMark /> View on GitHub ↗
+                  </a>
+                )}
+                {(project.links ?? []).map((link) => (
                   <a
                     key={link.href}
                     href={link.href}
@@ -163,24 +193,29 @@ function DesktopConstellation({ projects, openId, onOpen }) {
       </svg>
 
       {projects.map((project, i) => (
-        <button
+        <div
           key={project.id}
-          type="button"
-          onClick={(event) => onOpen(project.id, event.currentTarget)}
-          aria-haspopup="dialog"
-          data-hue={project.hue}
-          data-cursor="interactive"
           style={{ left: `${stars[i].x}%`, top: `${stars[i].y}%` }}
-          className="project-star group absolute flex w-56 -translate-x-1/2 -translate-y-12 flex-col items-center text-center outline-none"
+          className="absolute flex w-56 -translate-x-1/2 -translate-y-12 flex-col items-center"
         >
-          <span data-warp-origin className="relative flex h-24 w-24 items-center justify-center">
-            {openId !== project.id && <Planet project={project} variant="star" className="absolute inset-0" />}
-            <span aria-hidden="true" className="project-star-core" />
-          </span>
-          <span className="mt-3 text-[0.6rem] uppercase tracking-[0.3em] text-nebula/80">{project.type}</span>
-          <span className="mt-2 font-display text-base font-bold uppercase tracking-wide">{project.title}</span>
-          <span className="project-star-summary mt-2 text-xs leading-relaxed text-gray-400">{project.summary}</span>
-        </button>
+          <button
+            type="button"
+            onClick={(event) => onOpen(project.id, event.currentTarget)}
+            aria-haspopup="dialog"
+            data-hue={project.hue}
+            data-cursor="interactive"
+            className="project-star group flex w-full flex-col items-center text-center outline-none"
+          >
+            <span data-warp-origin className="relative flex h-24 w-24 items-center justify-center">
+              {openId !== project.id && <Planet project={project} variant="star" className="absolute inset-0" />}
+              <span aria-hidden="true" className="project-star-core" />
+            </span>
+            <span className="mt-3 text-[0.6rem] uppercase tracking-[0.3em] text-nebula/80">{project.type}</span>
+            <span className="mt-2 font-display text-base font-bold uppercase tracking-wide">{project.title}</span>
+            <span className="project-star-summary mt-2 text-xs leading-relaxed text-gray-400">{project.summary}</span>
+          </button>
+          <GitHubLink project={project} className="mt-3" />
+        </div>
       ))}
     </div>
   );
@@ -206,6 +241,7 @@ function MobileConstellation({ projects, openId, onOpen }) {
             <span className="mt-2 block text-xs leading-relaxed text-gray-400">{project.summary}</span>
             <span className="mt-3 block text-[0.6rem] uppercase tracking-[0.3em] text-phosphor">&gt; Explore</span>
           </button>
+          <GitHubLink project={project} className="mt-3" />
         </li>
       ))}
     </ol>

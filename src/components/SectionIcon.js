@@ -1,5 +1,21 @@
 // Small line icons for the section tags, one per chapter.
 const ICONS = {
+  // A crew member: head and shoulders inside a ring
+  crew: (
+    <>
+      <circle cx="12" cy="12" r="10" strokeOpacity="0.55" />
+      <circle cx="12" cy="9.5" r="3.2" />
+      <path d="M5.8 18.5 C7 15.3 9.2 14 12 14 C14.8 14 17 15.3 18.2 18.5" />
+    </>
+  ),
+  // A planet on a tilted orbit
+  orbit: (
+    <>
+      <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-18 12 12)" strokeOpacity="0.55" />
+      <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none" />
+      <circle cx="20.2" cy="9.2" r="1.6" fill="currentColor" stroke="none" />
+    </>
+  ),
   // Three joined nodes — a neural network
   network: (
     <>

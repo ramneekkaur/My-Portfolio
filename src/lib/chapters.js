@@ -6,8 +6,10 @@
 //   realm   colour of the chapter: space (white), tech (blue) or nature (green)
 export const CHAPTERS = [
   { id: "seed", label: "Intro", title: "The Seed", realm: "space" },
+  { id: "about", label: "About", title: "Crew Profile", icon: "crew", realm: "space" },
   { id: "neural-garden", label: "Skills", title: "Neural Ecosystem", icon: "network", realm: "tech" },
   { id: "growth-rings", label: "Experience & Education", title: "Growth Rings", icon: "rings", realm: "tech" },
+  { id: "studies", label: "Studies", title: "Learning Orbit", icon: "orbit", realm: "tech" },
   { id: "projects", label: "Projects", title: "Constellations of Work", icon: "star", realm: "tech" },
   {
     id: "quantum-roots",
